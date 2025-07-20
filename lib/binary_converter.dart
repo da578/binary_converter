@@ -5,7 +5,7 @@
 /// All methods that return a string representation of a number will return
 /// uppercase letters for hexadecimal values (e.g., 'A' instead of 'a').
 class BinaryConverter {
-  //--- Static Lookup Maps for Direct Bit-to-Digit Conversions ---
+  // --- Static Lookup Maps for Direct Bit-to-Digit Conversions ---
   // These maps are used for efficient grouping/ungrouping of bits for Octal and Hexadecimal.
 
   /// Maps 3-bit binary strings to their corresponding octal digits (0-7).
@@ -72,6 +72,8 @@ class BinaryConverter {
     "F": "1111",
   };
 
+  // --- Internal Validation Helpers ---
+
   /// Checks if the given [binaryString] contains only '0' and '1'.
   static bool _isValidBinary(String binaryString) {
     if (binaryString.trim().isEmpty) return false;
@@ -98,27 +100,31 @@ class BinaryConverter {
   /// Checks if the given [hexString] contains valid hexadecimal characters (0-9, A-F, case-insensitive).
   static bool _isValidHexadecimal(String hexString) {
     if (hexString.trim().isEmpty) return false;
-    final upperHexString = hexString.toUpperCase();
+    const validHexChars = '0123456789ABCDEF';
+    final String upperHexString = hexString.toUpperCase();
     for (int i = 0; i < upperHexString.length; i++) {
       final char = upperHexString[i];
-      if (!(char.codeUnitAt(0) >= '0'.codeUnitAt(0) &&
-              char.codeUnitAt(0) <= '9'.codeUnitAt(0)) ||
-          (char.codeUnitAt(0) >= 'A'.codeUnitAt(0) &&
-              char.codeUnitAt(0) <= 'F'.codeUnitAt(0))) {
+      if (!validHexChars.contains(char)) {
         return false;
       }
     }
     return true;
   }
 
-  static String _trimLeadingZeros(String binaryString) {
-    if (binaryString == "0") return "0";
-    final firstOneIndex = binaryString.indexOf('1');
-    if (firstOneIndex == -1) return "0";
-    return binaryString.substring(firstOneIndex);
+  /// Removes leading zeros from a string, unless the string itself is "0".
+  /// This is a generic trimmer for any base string representation.
+  static String _trimLeadingZeros(String value) {
+    if (value == "0") return "0";
+    var firstNonZeroIndex = 0;
+    while (firstNonZeroIndex < value.length - 1 &&
+        value[firstNonZeroIndex] == '0') {
+      firstNonZeroIndex++;
+    }
+    return value.substring(firstNonZeroIndex);
   }
 
   // --- Public Conversion Methods ---
+
   /// Converts a binary string [binaryString] to its decimal (base-10) integer representation.
   ///
   /// Parameters:
@@ -160,12 +166,12 @@ class BinaryConverter {
     }
     if (binaryString == "0") return "0";
 
-    final StringBuffer octalStringBuilder = StringBuffer();
     int paddingNeeded = binaryString.length % 3;
     if (paddingNeeded != 0) {
       binaryString = '0' * (3 - paddingNeeded) + binaryString;
     }
 
+    final StringBuffer octalStringBuilder = StringBuffer();
     for (int i = 0; i < binaryString.length; i += 3) {
       final String threeBits = binaryString.substring(i, i + 3);
       final String? octalDigit = _threeBitBinaryToOctalMap[threeBits];
@@ -202,12 +208,12 @@ class BinaryConverter {
     }
     if (binaryString == "0") return "0";
 
-    final StringBuffer hexStringBuilder = StringBuffer();
     int paddingNeeded = binaryString.length % 4;
     if (paddingNeeded != 0) {
       binaryString = '0' * (4 - paddingNeeded) + binaryString;
     }
 
+    final StringBuffer hexStringBuilder = StringBuffer();
     for (int i = 0; i < binaryString.length; i += 4) {
       final String fourBits = binaryString.substring(i, i + 4);
       final String? hexDigit = _fourBitBinaryToHexMap[fourBits];
@@ -238,7 +244,6 @@ class BinaryConverter {
         'Decimal number cannot be negative for direct binary conversion.',
       );
     }
-    // Dart's built-in toRadixString is efficient.
     return decimalNumber.toRadixString(2);
   }
 
@@ -277,9 +282,7 @@ class BinaryConverter {
         'Decimal number cannot be negative for direct hexadecimal conversion.',
       );
     }
-    return decimalNumber
-        .toRadixString(16)
-        .toUpperCase(); // Hex usually uses uppercase letters
+    return decimalNumber.toRadixString(16).toUpperCase();
   }
 
   /// Converts an octal string [octalString] to its binary (base-2) string representation.
@@ -359,8 +362,7 @@ class BinaryConverter {
     if (hexString == "0") return "0";
 
     final StringBuffer binaryStringBuilder = StringBuffer();
-    final upperHexString = hexString
-        .toUpperCase(); // Ensure uppercase for map lookup
+    final upperHexString = hexString.toUpperCase();
     for (int i = 0; i < upperHexString.length; i++) {
       final String char = upperHexString[i];
       final String? fourBitsBinary = _hexToFourBitBinaryMap[char];
