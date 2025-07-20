@@ -1,4 +1,4 @@
-import 'package:binary_conversion/binary_converter.dart';
+import 'package:binary_converter/binary_converter.dart';
 import 'package:test/test.dart';
 
 void main() {

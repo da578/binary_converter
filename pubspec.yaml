@@ -1,7 +1,7 @@
-name: binary_conversion
+name: binary_converter
 description: A lightweight Dart package providing utility functions for converting numbers between common numeral systems (binary, octal, decimal, and hexadecimal).
 version: 0.0.1
-repository: https://github.com/da578/binary_conversion
+repository: https://github.com/da578/binary_converter
 
 environment:
   sdk: ^3.8.1
