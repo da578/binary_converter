@@ -139,9 +139,10 @@ void main() {
           BinaryConverter.binaryToHexadecimal('1011010111001101'),
           'B5CD',
         ); // No padding
+        // FIX: Corrected expected value from '5AC6' to '5AE6'
         expect(
           BinaryConverter.binaryToHexadecimal('101101011100110'),
-          '5AC6',
+          '5AE6',
         ); // Padding needed
       });
 
